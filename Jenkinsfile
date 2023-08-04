@@ -10,8 +10,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'python3 -m venv venv'
-                sh 'source venv/bin/activate'
-                sh 'pip3 install -r requirements.txt'
+                sh 'source venv/bin/activate && pip install -r requirements.txt'
             }
         }
         stage('Test') {
@@ -23,7 +22,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'python3 app.py'
+                sh 'source venv/bin/activate && python app.py'
             }
         }
     }
