@@ -11,7 +11,7 @@ pipeline {
             steps {
                 sh 'python3 -m venv venv'
                 sh 'source venv/bin/activate'
-                sh 'pip3 install flask flask_sqlalchemy'
+                sh 'pip3 install -r requirements.txt'
             }
         }
         stage('Test') {
@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'python app.py'
+                sh 'python3 app.py'
             }
         }
     }
