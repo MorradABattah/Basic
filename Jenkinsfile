@@ -11,7 +11,7 @@ pipeline {
             steps {
                 sh 'python3 -m venv venv'
                 sh 'source venv/bin/activate'
-                sh 'pip install flask flask_sqlalchemy'
+                sh 'pip3 install flask flask_sqlalchemy'
             }
         }
         stage('Test') {
