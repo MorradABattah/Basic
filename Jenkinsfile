@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Pull from Repository') {
             steps {
-                git 'https://github.com/MorradABattah/Basic.git'
+                git url: 'https://github.com/MorradABattah/Basic.git', branch: 'main'
             }
         }
         stage('Build') {
