@@ -1,28 +1,31 @@
 pipeline {
     agent any
-
     stages {
-        stage('Pull from Repository') {
+        stage('Checkout') {
             steps {
-                git url: 'https://github.com/MorradABattah/Basic.git', branch: 'main'
+                checkout scm
             }
         }
         stage('Build') {
             steps {
-                sh 'python3 -m venv venv'
-                sh 'source venv/bin/activate && pip install -r requirements.txt'
+                sh '''
+                  python3 -m venv venv
+                  . venv/bin/activate
+                  pip install -r requirements.txt
+                '''
             }
         }
         stage('Test') {
             steps {
-                // Here you would typically run your tests. 
-                // We have none to run in this case.
                 echo 'No tests to run'
             }
         }
         stage('Deploy') {
             steps {
-                sh 'source venv/bin/activate && python app.py'
+                sh '''
+                  . venv/bin/activate
+                  python runner.py
+                '''
             }
         }
     }

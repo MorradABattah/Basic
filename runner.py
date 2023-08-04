@@ -1,3 +1,11 @@
+from runner import app
+from flask_sqlalchemy import SQLAlchemy
+
+app.app_context().push()
+
+db = SQLAlchemy(app)
+db.create_all()
+
 from flask import Flask, request, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
