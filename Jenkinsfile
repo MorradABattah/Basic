@@ -30,5 +30,3 @@ pipeline {
         }
     }
 }
-
-#ssh 192.168.1.100 'uwsgi --ini uwsgi.ini'
