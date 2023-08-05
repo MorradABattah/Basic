@@ -24,7 +24,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Deploying application..."
-                    ssh Jenkins@18.219.10.126 "uwsgi --ini uwsgi.ini"
+                    ssh 18.219.10.126 "uwsgi --ini uwsgi.ini"
                 '''
             }
         }
