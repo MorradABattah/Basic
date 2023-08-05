@@ -53,5 +53,9 @@ def files():
     file_links = [url_for('uploaded_file', filename=file.filename) for file in files]
     return '<br>'.join(file_links)
 
+def run():
+    with app.app_context():
+        app.run(debug=True)
+
 if __name__ == '__main__':
     run()
