@@ -1,9 +1,7 @@
-import os
-import uwsgi
-
 from flask import Flask, request, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
@@ -60,5 +58,4 @@ def run():
         app.run(debug=True)
 
 if __name__ == '__main__':
-    uwsgi.ini = './uwsgi.ini'
     run()
