@@ -1,11 +1,3 @@
-from runner import app
-from flask_sqlalchemy import SQLAlchemy
-
-app.app_context().push()
-
-db = SQLAlchemy(app)
-db.create_all()
-
 from flask import Flask, request, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
@@ -15,6 +7,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 db = SQLAlchemy(app)
 
 class Document(db.Model):
@@ -23,6 +16,10 @@ class Document(db.Model):
 
     def __repr__(self):
         return '<Document %r>' % self.filename
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -54,10 +51,6 @@ def files():
     files = Document.query.all()
     file_links = [url_for('uploaded_file', filename=file.filename) for file in files]
     return '<br>'.join(file_links)
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 if __name__ == '__main__':
     if not os.path.exists('uploads/'):
