@@ -24,9 +24,11 @@ pipeline {
             steps {
                 sh '''
                     echo "Deploying application..."
-                    ssh user@host "uwsgi --ini uwsgi.ini"
+                    ssh user@localhost "uwsgi --ini uwsgi.ini"
                 '''
             }
         }
     }
 }
+
+#ssh 192.168.1.100 'uwsgi --ini uwsgi.ini'
