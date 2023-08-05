@@ -23,8 +23,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                  . venv/bin/activate
-                  python runner.py
+                    echo "Deploying application..."
+                    ssh user@host "uwsgi --ini uwsgi.ini"
                 '''
             }
         }
