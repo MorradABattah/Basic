@@ -23,15 +23,16 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            new_file = Document(filename=filename)
-            db.session.add(new_file)
-            db.session.commit()
-            return redirect(url_for('uploaded_file', filename=filename))
+    with app.app_context():
+        if request.method == 'POST':
+            file = request.files['file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                new_file = Document(filename=filename)
+                db.session.add(new_file)
+                db.session.commit()
+                return redirect(url_for('uploaded_file', filename=filename))
     return '''
     <!doctype html>
     <title>Upload new File</title>
