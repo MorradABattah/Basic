@@ -54,7 +54,4 @@ def files():
     return '<br>'.join(file_links)
 
 if __name__ == '__main__':
-    if not os.path.exists('uploads/'):
-        os.makedirs('uploads/')
-    db.create_all()
-    app.run(debug=True)
+    run()
