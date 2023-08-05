@@ -13,7 +13,7 @@ pipeline {
                   . venv/bin/activate
                   pip install -r requirements.txt
                   echo "Loading schema..."
-                  sh "cat schema.sql | sqlite3 db.sqlite3"
+                  sh "cat /Users/morradbattah/Documents/GitHub/Basic/schema.sql | sqlite3 db.sqlite3"
                 '''
             }
         }
