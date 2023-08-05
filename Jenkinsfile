@@ -12,6 +12,8 @@ pipeline {
                   python3 -m venv venv
                   . venv/bin/activate
                   pip install -r requirements.txt
+                  echo "Loading schema..."
+                  sh "cat schema.sql | sqlite3 db.sqlite3"
                 '''
             }
         }
