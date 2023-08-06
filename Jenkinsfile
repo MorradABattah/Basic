@@ -12,9 +12,22 @@ pipeline {
                   python3 -m venv venv
                   . venv/bin/activate
                   pip install -r requirements.txt
-                  echo "Loading schema..."
-                  cd $(pwd)
-                  cat schema.sql | sqlite3 db.sqlite3
+                '''
+            }
+        }
+        stage('Install SQLite') {
+            steps {
+                sh '''
+                    echo "Installing SQLite..."
+                    sudo apt install sqlite3
+                '''
+            }
+        }
+        stage('Load schema') {
+            steps {
+                sh '''
+                    echo "Loading schema..."
+                    sqlite3 db.sqlite3 < schema.sql
                 '''
             }
         }
