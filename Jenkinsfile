@@ -19,7 +19,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Installing SQLite..."
-                    sudo -u jenkins apt install sqlite3                '''
+                    sudo -u Jenkins apt install sqlite3                '''
             }
         }
         stage('Load schema') {
