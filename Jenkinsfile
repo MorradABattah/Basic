@@ -34,7 +34,7 @@ pipeline {
                         brew update
                         brew install postgresql@15
                         brew services start postgresql@15
-                        /usr/local/Cellar/postgresql@15/<version>/bin/createdb mydatabase
+                        /usr/local/Cellar/postgresql@15/15.*/bin/createdb mydatabase
                     '''
                 }
             }
