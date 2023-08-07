@@ -26,19 +26,21 @@ pipeline {
         }
 
         stage('Setup PostgreSQL') {
-            steps {
-                echo 'Setting up PostgreSQL...'
-                withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
-                    sh '''
-                        which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-                        brew update
-                        brew install postgresql@15
-                        brew services start postgresql@15
-                        /usr/local/Cellar/postgresql@15/15.*/bin/createdb mydatabase
-                    '''
-                }
-            }
+    steps {
+        echo 'Setting up PostgreSQL...'
+        withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
+            sh '''
+                which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                brew update
+                brew install postgresql@15
+                brew services start postgresql@15
+                /usr/local/Cellar/postgresql@15/15.*/bin/dropdb --if-exists mydatabase
+                /usr/local/Cellar/postgresql@15/15.*/bin/createdb mydatabase
+            '''
         }
+    }
+}
+
 
         stage('Reinstall psycopg2') {
             steps {
