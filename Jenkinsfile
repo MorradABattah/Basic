@@ -26,34 +26,32 @@ pipeline {
         }
 
         stage('Setup PostgreSQL') {
-    steps {
-        echo 'Setting up PostgreSQL...'
-        withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
-            sh '''
-                which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-                brew update
-                brew install postgresql@15
-                brew services start postgresql@15
-                /usr/local/Cellar/postgresql@15/15.*/bin/dropdb --if-exists mydatabase
-                /usr/local/Cellar/postgresql@15/15.*/bin/createdb mydatabase
-            '''
+            steps {
+                echo 'Setting up PostgreSQL...'
+                withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
+                    sh '''
+                        which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                        brew update
+                        brew install postgresql@15
+                        brew services start postgresql@15
+                        /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists mydatabase
+                        /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb mydatabase
+                    '''
+                }
+            }
         }
-    }
-}
-
 
         stage('Reinstall psycopg2') {
-    steps {
-        echo 'Reinstalling psycopg2...'
-        sh '''
-            . venv/bin/activate
-            pip uninstall -y psycopg2
-            export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.*/bin
-            pip install psycopg2
-        '''
-    }
-}
-
+            steps {
+                echo 'Reinstalling psycopg2...'
+                sh '''
+                    . venv/bin/activate
+                    pip uninstall -y psycopg2
+                    export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.3_2/bin
+                    pip install psycopg2
+                '''
+            }
+        }
 
         stage('Load schema') {
             steps {
