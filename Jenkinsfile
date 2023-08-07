@@ -20,7 +20,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
                     sh '''
                         echo "Installing SQLite..."
-                        sudo apt-get install sqlite3
+                        sudo apt-get install sqlite3 -S
                     '''
                 }
             }
