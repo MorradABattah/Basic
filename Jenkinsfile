@@ -34,9 +34,10 @@ pipeline {
         
         stage('Load schema') {
             steps {
-                echo 'Loading database schema into SQLite...'
-                sh '''
-                    sqlite3 db.sqlite3 < schema.sql || exit 1
+               echo 'Loading database schema using Python script...'
+        sh '''
+            . venv/bin/activate
+            python load_schema.py || exit 1
                 '''
             }
         }

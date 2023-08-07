@@ -1,5 +1,6 @@
-def load_schema():
-    with open(os.path.join(os.path.dirname(__file__), 'schema.sql')) as f:
-        schema = f.read()
-    return schema
-
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL
+);
+-- Other SQL statements as needed
