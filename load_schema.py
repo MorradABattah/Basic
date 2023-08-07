@@ -2,7 +2,7 @@ import os
 import psycopg2
 from psycopg2 import sql
 
-DATABASE_URL = 'postgresql://username:password@localhost:5432/mydatabase'
+DATABASE_URL = 'postgresql://postgres:password@localhost:5432/mydatabase'
 
 def load_schema():
     with open(os.path.join(os.path.dirname(__file__), 'schema.sql')) as f:
