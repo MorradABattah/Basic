@@ -33,14 +33,15 @@ pipeline {
         }
         
         stage('Load schema') {
-            steps {
-               echo 'Loading database schema using Python script...'
-        sh '''
-            . venv/bin/activate
-            python load_schema.py || exit 1
-                '''
-            }
+        steps {
+           echo 'Loading database schema using Python script...'
+    sh '''
+        . venv/bin/activate
+        python load_schema.py || exit 1
+        mkdir uploads || exit 1
+            '''
         }
+    }
         
         stage('Test') {
             steps {
