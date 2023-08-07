@@ -1,58 +1,65 @@
-from flask import Flask, request, redirect, url_for, send_from_directory, render_template, flash
+from flask import Flask, render_template, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired, FileAllowed
-from werkzeug.utils import secure_filename
-from wtforms import SubmitField
-import os
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5433/mydatabase'
-app.config['UPLOAD_FOLDER'] = 'uploads/'
-app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-app.config['SECRET_KEY'] = 'your_secret_key'  # Change this to a secure random value
-
+app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5433/mydatabase'
 db = SQLAlchemy(app)
 
-class Document(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(80), unique=True, nullable=False)
+    username = db.Column(db.String(64), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
 
-    def __repr__(self):
-        return '<Document %r>' % self.filename
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
-class UploadForm(FlaskForm):
-    file = FileField('File', validators=[FileRequired(), FileAllowed(app.config['ALLOWED_EXTENSIONS'], 'File type not allowed!')])
-    submit = SubmitField('Upload')
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
-@app.route('/', methods=['GET', 'POST'])
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Register')
+
+@app.route('/')
 def index():
-    form = UploadForm()
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
     if form.validate_on_submit():
-        file = form.file.data
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        new_file = Document(filename=filename)
-        db.session.add(new_file)
+        # Handle login
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is not None and user.check_password(form.password.data):
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid username or password.')
+    return render_template('login.html', form=form)
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        # Handle registration
+        user = User(username=form.username.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
         db.session.commit()
-        flash('File uploaded successfully!', 'success')
-        return redirect(url_for('uploaded_file', filename=filename))
-    return render_template('upload.html', form=form)
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-@app.route('/files')
-def files():
-    files = Document.query.all()
-    file_links = [url_for('uploaded_file', filename=file.filename) for file in files]
-    return '<br>'.join(file_links)
-
-def run():
-    with app.app_context():
-        db.create_all()  # Create tables if they don't exist
-        app.run(debug=True)
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
 
 if __name__ == '__main__':
-    run()
+    app.run(debug=True)
