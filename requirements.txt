@@ -1,7 +1,7 @@
 Flask
 Flask-SQLAlchemy
 SQLAlchemy
-psycopg2
+psycopg2-binary
 Flask-WTF
 Werkzeug
 WTForms
