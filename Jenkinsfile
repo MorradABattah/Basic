@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DATABASE_URL = 'postgresql://username:password@localhost:5432/mydatabase'
+        DATABASE_URL = 'postgresql://username:password@localhost:5433/mydatabase'
         SECRET_KEY = 'your_secret_key'  // Ideally, this should be stored securely
     }
 
