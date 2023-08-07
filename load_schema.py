@@ -16,13 +16,17 @@ def load_schema():
 
             # Execute the SQL commands from schema.sql
             conn.executescript(schema)
-            # Create the uploads directory if it doesn't already exist
-            os.makedirs('uploads', exist_ok=True)
+
+            # Check if the uploads directory already exists
+            if 'uploads' not in [table[0] for table in tables]:
+                os.makedirs('uploads', exist_ok=True)
         else:
             # If the table doesn't exist, just execute the SQL commands
             conn.executescript(schema)
-            # Create the uploads directory if it doesn't already exist
-            os.makedirs('uploads', exist_ok=True)
+
+            # Check if the uploads directory already exists
+            if 'uploads' not in [table[0] for table in tables]:
+                os.makedirs('uploads', exist_ok=True)
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
         return False
