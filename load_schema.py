@@ -11,10 +11,15 @@ def load_schema():
         # Check if the users table already exists
         tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table';")
         if 'users' in [table[0] for table in tables]:
-            print('The users table already exists. Skipping...')
-            return True
-        else:
+            # If the table already exists, drop it
+            conn.execute("DROP TABLE IF EXISTS users;")
+
             # Execute the SQL commands from schema.sql
+            conn.executescript(schema)
+            # Create the uploads directory if it doesn't already exist
+            os.makedirs('uploads', exist_ok=True)
+        else:
+            # If the table doesn't exist, just execute the SQL commands
             conn.executescript(schema)
             # Create the uploads directory if it doesn't already exist
             os.makedirs('uploads', exist_ok=True)
