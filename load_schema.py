@@ -27,6 +27,14 @@ def load_schema():
             # Check if the uploads directory already exists
             if 'uploads' not in [table[0] for table in tables]:
                 os.makedirs('uploads', exist_ok=True)
+
+        # Check if the documents table already exists
+        if 'documents' in [table[0] for table in tables]:
+            print('The documents table already exists. Skipping...')
+            return True
+        else:
+            conn.executescript(schema)
+
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
         return False
