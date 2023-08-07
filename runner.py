@@ -46,7 +46,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('upload')) # Redirect to upload screen after login
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -54,7 +54,7 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user)
-        return redirect(url_for('index'))
+        return redirect(url_for('upload')) # Redirect to upload screen after login
     return render_template('login.html', title='Sign In', form=form)
 
 @app.route('/logout')
@@ -73,8 +73,13 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
+        return redirect(url_for('login')) # Redirect to login screen after registration
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/upload') # Add this route for the upload screen
+@login_required
+def upload():
+    return render_template('upload.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
