@@ -5,6 +5,7 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.urls import url_parse
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -51,13 +52,15 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
+            flash('Login Failed. Invalid username or password.')
             return redirect(url_for('login'))
         login_user(user)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('upload')
         return redirect(next_page)
+    if 'message' in request.args:
+        flash(request.args['message'])
     return render_template('login.html', title='Sign In', form=form)
 
 @app.route('/logout')
@@ -75,8 +78,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login')) # Redirect to login screen after registration
+        return redirect(url_for('login', message='Congratulations, you are now a registered user!')) # Redirect to login screen after registration
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/upload') # Add this route for the upload screen
