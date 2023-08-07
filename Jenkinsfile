@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Install SQLite') {
             steps {
-                withEnv(["password=jenkins"]) {
+                withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
                     sh '''
                         echo "Installing SQLite..."
                         sudo apt-get install sqlite3
