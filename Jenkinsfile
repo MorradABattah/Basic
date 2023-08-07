@@ -3,46 +3,56 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                echo 'Checking out source code...'
                 checkout scm
             }
         }
+        
         stage('Build') {
             steps {
+                echo 'Setting up virtual environment and installing requirements...'
                 sh '''
-                  python3 -m venv venv
+                  python3 -m venv venv || exit 1
                   . venv/bin/activate
-                  pip install -r requirements.txt
+                  pip install -r requirements.txt || exit 1
                 '''
             }
         }
+        
         stage('Install SQLite') {
             steps {
+                echo 'Installing SQLite...'
                 withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
                     sh '''
-                        echo "Installing SQLite..."
-                        sudo apt-get install sqlite3 -S
+                        which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                        brew update
+                        brew install sqlite || exit 1
                     '''
                 }
             }
         }
+        
         stage('Load schema') {
             steps {
+                echo 'Loading database schema into SQLite...'
                 sh '''
-                    echo "Loading schema..."
-                    sqlite3 db.sqlite3 < schema.sql
+                    sqlite3 db.sqlite3 < schema.sql || exit 1
                 '''
             }
         }
+        
         stage('Test') {
             steps {
                 echo 'No tests to run'
             }
         }
+        
         stage('Deploy') {
             steps {
+                echo 'Running deployment script...'
                 sh '''
                   . venv/bin/activate
-                  python runner.py
+                  python runner.py || exit 1
                 '''
             }
         }
