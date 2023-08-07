@@ -43,15 +43,17 @@ pipeline {
 
 
         stage('Reinstall psycopg2') {
-            steps {
-                echo 'Reinstalling psycopg2...'
-                sh '''
-                    . venv/bin/activate
-                    pip uninstall -y psycopg2
-                    pip install psycopg2
-                '''
-            }
-        }
+    steps {
+        echo 'Reinstalling psycopg2...'
+        sh '''
+            . venv/bin/activate
+            pip uninstall -y psycopg2
+            export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.*/bin
+            pip install psycopg2
+        '''
+    }
+}
+
 
         stage('Load schema') {
             steps {
