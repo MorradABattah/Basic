@@ -6,10 +6,11 @@ from wtforms.validators import DataRequired
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.urls import url_parse
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5433/mydatabase'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
 db = SQLAlchemy(app)
 login = LoginManager(app)
@@ -78,13 +79,18 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('login', message='Congratulations, you are now a registered user!')) # Redirect to login screen after registration
+        return redirect(url_for('login', message='Congratulations, you are now a registered user!')) # Redirect to login screen after reg
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/upload') # Add this route for the upload screen
 @login_required
 def upload():
     return render_template('upload.html')
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', user=current_user)
 
 if __name__ == '__main__':
     app.run(debug=True)

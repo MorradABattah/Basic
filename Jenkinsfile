@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DATABASE_URL = 'postgresql://username:password@localhost:5433/mydatabase'
-        SECRET_KEY = 'your_secret_key'  // Ideally, this should be stored securely
+        SECRET_KEY = 'your_secret_key' // Ideally, this should be stored securely
     }
 
     stages {
@@ -18,10 +18,10 @@ pipeline {
             steps {
                 echo 'Setting up virtual environment and installing requirements...'
                 sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install -r requirements.txt
-                    pip install flask-login
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install -r requirements.txt
+                pip install flask-login
                 '''
             }
         }
@@ -31,12 +31,12 @@ pipeline {
                 echo 'Setting up PostgreSQL...'
                 withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
                     sh '''
-                        which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-                        brew update
-                        brew install postgresql@15
-                        brew services start postgresql@15
-                        /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists mydatabase
-                        /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb mydatabase
+                    which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                    brew update
+                    brew install postgresql@15
+                    brew services start postgresql@15
+                    /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists mydatabase
+                    /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb mydatabase
                     '''
                 }
             }
@@ -46,10 +46,10 @@ pipeline {
             steps {
                 echo 'Reinstalling psycopg2...'
                 sh '''
-                    . venv/bin/activate
-                    pip uninstall -y psycopg2
-                    export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.3_2/bin
-                    pip install psycopg2
+                . venv/bin/activate
+                pip uninstall -y psycopg2
+                export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.3_2/bin
+                pip install psycopg2
                 '''
             }
         }
@@ -58,15 +58,19 @@ pipeline {
             steps {
                 echo 'Loading database schema using Python script...'
                 sh '''
-                    . venv/bin/activate
-                    python load_schema.py
+                . venv/bin/activate
+                python load_schema.py
                 '''
             }
         }
 
         stage('Test') {
             steps {
-                echo 'No tests to run'
+                echo 'Running tests...'
+                sh '''
+                . venv/bin/activate
+                python -m unittest discover tests
+                '''
             }
         }
 
@@ -74,8 +78,8 @@ pipeline {
             steps {
                 echo 'Running deployment script...'
                 sh '''
-                    . venv/bin/activate
-                    python runner.py
+                . venv/bin/activate
+                python runner.py
                 '''
             }
         }
