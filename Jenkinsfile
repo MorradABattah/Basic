@@ -1,5 +1,11 @@
 pipeline {
     agent any
+
+    environment {
+        DATABASE_URL = 'postgresql://username:password@localhost:5432/mydatabase'
+        SECRET_KEY = 'your_secret_key'  // Ideally, this should be stored securely
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -7,54 +13,55 @@ pipeline {
                 checkout scm
             }
         }
-        
-        stage('Build') {
+
+        stage('Setup Environment') {
             steps {
                 echo 'Setting up virtual environment and installing requirements...'
                 sh '''
-                  python3 -m venv venv || exit 1
-                  . venv/bin/activate
-                  pip install -r requirements.txt || exit 1
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirements.txt
                 '''
             }
         }
-        
-        stage('Install SQLite') {
+
+        stage('Setup PostgreSQL') {
             steps {
-                echo 'Installing SQLite...'
+                echo 'Setting up PostgreSQL...'
                 withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
                     sh '''
                         which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
                         brew update
-                        brew install sqlite || exit 1
+                        brew install postgresql
+                        brew services start postgresql
+                        createdb mydatabase
                     '''
                 }
             }
         }
-        
+
         stage('Load schema') {
-        steps {
-           echo 'Loading database schema using Python script...'
-    sh '''
-        . venv/bin/activate
-        python load_schema.py || exit 1
-        mkdir uploads || exit 1
-            '''
+            steps {
+                echo 'Loading database schema using Python script...'
+                sh '''
+                    . venv/bin/activate
+                    python load_schema.py
+                '''
+            }
         }
-    }
-        
+
         stage('Test') {
             steps {
                 echo 'No tests to run'
             }
         }
-        
+
         stage('Deploy') {
             steps {
                 echo 'Running deployment script...'
                 sh '''
-                  . venv/bin/activate
-                  python runner.py || exit 1
+                    . venv/bin/activate
+                    python runner.py
                 '''
             }
         }

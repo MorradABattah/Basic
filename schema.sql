@@ -1,6 +1,6 @@
 -- Users Table
 CREATE TABLE users (
-    id INTEGER PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     date_joined DATE DEFAULT CURRENT_DATE,
@@ -9,27 +9,25 @@ CREATE TABLE users (
 
 -- Documents Table
 CREATE TABLE documents (
-    id INTEGER PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     filename TEXT NOT NULL,
     uploaded_date DATE DEFAULT CURRENT_DATE,
-    user_id INTEGER,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Logs or Activity Table
 CREATE TABLE user_activity_logs (
-    id INTEGER PRIMARY KEY,
-    user_id INTEGER,
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     activity TEXT NOT NULL,
-    activity_date DATE DEFAULT CURRENT_DATE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    activity_date DATE DEFAULT CURRENT_DATE
 );
 
 -- Other SQL statements as needed
 
 -- Create the uploads directory if it doesn't already exist
 CREATE TABLE uploads (
-    id INTEGER PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     filename TEXT NOT NULL,
     uploaded_date DATE DEFAULT CURRENT_DATE
 );
