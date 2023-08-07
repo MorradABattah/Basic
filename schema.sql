@@ -8,7 +8,7 @@ CREATE TABLE users (
 );
 
 -- Documents Table
-CREATE TABLE documents (
+CREATE TABLE document (
     id INTEGER PRIMARY KEY,
     filename TEXT NOT NULL,
     uploaded_date DATE DEFAULT CURRENT_DATE,
