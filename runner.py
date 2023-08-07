@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for
+from flask import Flask, render_template, flash, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
@@ -54,7 +54,10 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user)
-        return redirect(url_for('upload')) # Redirect to upload screen after login
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('upload')
+        return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
 @app.route('/logout')
