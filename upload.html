@@ -1,0 +1,15 @@
+<!doctype html>
+<title>Upload new File</title>
+<h1>Upload new File</h1>
+<form method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.file.label }} {{ form.file() }}
+    {{ form.submit() }}
+</form>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <p style="color: {{ category }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endwith %}

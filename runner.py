@@ -1,12 +1,16 @@
-from flask import Flask, request, redirect, url_for, send_from_directory
+from flask import Flask, request, redirect, url_for, send_from_directory, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from werkzeug.utils import secure_filename
+from wtforms import SubmitField
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost:5432/mydatabase'
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+app.config['SECRET_KEY'] = 'your_secret_key'  # Change this to a secure random value
 
 db = SQLAlchemy(app)
 
@@ -17,31 +21,23 @@ class Document(db.Model):
     def __repr__(self):
         return '<Document %r>' % self.filename
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+class UploadForm(FlaskForm):
+    file = FileField('File', validators=[FileRequired(), FileAllowed(app.config['ALLOWED_EXTENSIONS'], 'File type not allowed!')])
+    submit = SubmitField('Upload')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    with app.app_context():
-        if request.method == 'POST':
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                new_file = Document(filename=filename)
-                db.session.add(new_file)
-                db.session.commit()
-                return redirect(url_for('uploaded_file', filename=filename))
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+    form = UploadForm()
+    if form.validate_on_submit():
+        file = form.file.data
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        new_file = Document(filename=filename)
+        db.session.add(new_file)
+        db.session.commit()
+        flash('File uploaded successfully!', 'success')
+        return redirect(url_for('uploaded_file', filename=filename))
+    return render_template('upload.html', form=form)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -55,6 +51,7 @@ def files():
 
 def run():
     with app.app_context():
+        db.create_all()  # Create tables if they don't exist
         app.run(debug=True)
 
 if __name__ == '__main__':

@@ -1,2 +1,7 @@
 Flask
 Flask-SQLAlchemy
+SQLAlchemy
+psycopg2
+Flask-WTF
+Werkzeug
+WTForms
