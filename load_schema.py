@@ -8,8 +8,14 @@ def load_schema():
     # Connect to the SQLite database (this creates the database if it doesn't exist)
     conn = sqlite3.connect('db.sqlite3')
     try:
-        # Execute the SQL commands from schema.sql
-        conn.executescript(schema)
+        # Check if the users table already exists
+        tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        if 'users' in [table[0] for table in tables]:
+            print('The users table already exists. Skipping...')
+            return True
+        else:
+            # Execute the SQL commands from schema.sql
+            conn.executescript(schema)
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
         return False
