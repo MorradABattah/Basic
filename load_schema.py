@@ -33,6 +33,7 @@ def load_schema():
 
         # Check if the documents table already exists
         if 'documents' in tables:
+            # If the table already exists, print a message and skip
             print('The documents table already exists. Skipping...')
             return True
         else:
