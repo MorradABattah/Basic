@@ -32,8 +32,8 @@ pipeline {
                     sh '''
                         which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
                         brew update
-                        brew install postgresql
-                        brew services start postgresql
+                        brew install postgresql@15
+                        brew services start postgresql@15
                         createdb mydatabase
                     '''
                 }
