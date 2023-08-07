@@ -16,8 +16,8 @@ pipeline {
             }
         }
         withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
-    echo "Installing SQLite..."
-    sudo -u jenkins apt install sqlite3
+            echo "Installing SQLite..."
+            sudo -u jenkins apt install sqlite3
         }
         stage('Load schema') {
             steps {
