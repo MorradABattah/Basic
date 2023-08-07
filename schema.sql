@@ -26,3 +26,10 @@ CREATE TABLE user_activity_logs (
 );
 
 -- Other SQL statements as needed
+
+-- Create the uploads directory if it doesn't already exist
+CREATE TABLE uploads (
+    id INTEGER PRIMARY KEY,
+    filename TEXT NOT NULL,
+    uploaded_date DATE DEFAULT CURRENT_DATE
+);
