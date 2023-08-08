@@ -4,9 +4,9 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import InputRequired, Length
-from flask_bootstrap import Bootstrap
 from wtforms.validators import InputRequired, Length, DataRequired
+from flask_bootstrap import Bootstrap
+from urllib.parse import urlparse, urljoin
 import os
 
 app = Flask(__name__)
@@ -43,6 +43,10 @@ class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Register')
+
+class ForgotPasswordForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    submit = SubmitField('Request Password Reset')
 
 @app.route('/')
 def index():
@@ -84,6 +88,21 @@ def register():
         db.session.commit()
         return redirect(url_for('login', message='Congratulations, you are now a registered user!')) # Redirect to login screen after reg
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            # Here you should implement your password reset logic.
+            # It usually involves sending a password reset email to the user.
+            pass
+        flash('If the username exists, a password reset email has been sent.')
+        return redirect(url_for('login'))
+    return render_template('forgot_password.html', title='Forgot Password', form=form)
 
 @app.route('/upload') # Add this route for the upload screen
 @login_required
