@@ -1,6 +1,6 @@
 import unittest
 from flask import url_for
-from runner import app  # replace 'your_flask_app' with the name of your Flask application module
+from runner import app
 
 class TestApp(unittest.TestCase):
     def setUp(self):
@@ -12,6 +12,6 @@ class TestApp(unittest.TestCase):
         with app.app_context():
             response = self.client.get(url_for('index'))
             self.assertEqual(response.status_code, 200)
+            self.assertIn(b'Welcome', response.data)
 
-if __name__ == '__main__':
-    unittest.main()
+# Rest of the code...
