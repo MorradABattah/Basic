@@ -22,6 +22,8 @@ pipeline {
                 . venv/bin/activate
                 pip install -r requirements.txt
                 pip install flask-login
+                pip install flask-bootstrap
+
                 '''
             }
         }
