@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length
 from flask_bootstrap import Bootstrap
+from wtforms.validators import InputRequired, Length, DataRequired
 import os
 
 app = Flask(__name__)
