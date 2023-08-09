@@ -44,15 +44,16 @@ pipeline {
         }
 
         stage('Setup PostgreSQL User and Database') {
-            steps {
-                echo 'Creating PostgreSQL user and database...'
-                sh '''
-                export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.3_2/bin
-                postgres --single -D /usr/local/var/postgresql@15 /usr/local/var/postgresql@15/pg_hba.conf -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;"
-                postgres --single -D /usr/local/var/postgresql@15 /usr/local/var/postgresql@15/pg_hba.conf -c "CREATE DATABASE Test OWNER username;"
-                '''
-            }
-        }
+    steps {
+        echo 'Creating PostgreSQL user and database...'
+        sh '''
+        export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.3_2/bin
+        psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;"
+        psql -U postgres -c "CREATE DATABASE Test OWNER username;"
+        '''
+    }
+}
+
 
         stage('Reinstall psycopg2') {
             steps {
