@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DATABASE_URL = 'postgresql://username:password@localhost:5433/mydatabase'
+        DATABASE_URL = 'postgresql://username:password@localhost:5433/Test'
         SECRET_KEY = 'your_secret_key' // Ideally, this should be stored securely
     }
 
@@ -37,8 +37,8 @@ pipeline {
                     brew update
                     brew install postgresql@15
                     brew services start postgresql@15
-                    /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists mydatabase
-                    /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb mydatabase
+                    /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists Test
+                    /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb Test
                     '''
                 }
             }
