@@ -42,14 +42,16 @@ pipeline {
         }
 
         stage('Setup PostgreSQL User and Database') {
-            steps {
-                echo 'Creating PostgreSQL user and database...'
-                sh '''
-                psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;"
-                psql -U postgres -c "CREATE DATABASE Test OWNER username;"
-                '''
-            }
-        }
+    steps {
+        echo 'Creating PostgreSQL user and database...'
+        sh '''
+        export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.3_2/bin
+        psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;"
+        psql -U postgres -c "CREATE DATABASE Test OWNER username;"
+        '''
+    }
+}
+
 
         stage('Reinstall psycopg2') {
             steps {
