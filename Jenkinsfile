@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DATABASE_URL = 'postgresql://username:admin@localhost:5433/Test'
+        DATABASE_URL = 'postgresql://username:password@localhost:5432/Test'
         SECRET_KEY = 'your_secret_key' // Ideally, this should be stored securely
     }
 
@@ -43,15 +43,19 @@ pipeline {
             }
         }
 
-        stage('Setup PostgreSQL User and Database') {
+        stage('Setup PostgreSQL') {
     steps {
-        echo 'Creating PostgreSQL user and database...'
-        sh '''
-        export PATH=$PATH:/usr/local/Cellar/postgresql@15/15.3_2/bin
-        psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;"
-        psql -U postgres -c "CREATE DATABASE Test OWNER username;"
-        '''
+        echo 'Setting up PostgreSQL...'
+        withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
+            sh '''
+            brew services start postgresql@15
+            psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;" || echo "User already exists"
+            psql -U postgres -c "CREATE DATABASE Test;" || echo "Database already exists"
+            '''
+        }
     }
+}
+
 }
 
 
