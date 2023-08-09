@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('Setup PostgreSQL') {
+        stage('Setup PostgreSQL 1') { // Renamed to avoid confusion
             steps {
                 echo 'Setting up PostgreSQL...'
                 withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
@@ -43,21 +43,18 @@ pipeline {
             }
         }
 
-        stage('Setup PostgreSQL') {
-    steps {
-        echo 'Setting up PostgreSQL...'
-        withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
-            sh '''
-            brew services start postgresql@15
-            psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;" || echo "User already exists"
-            psql -U postgres -c "CREATE DATABASE Test;" || echo "Database already exists"
-            '''
-        }
-    }
-}
-
-}
-
+        stage('Setup PostgreSQL 2') { // Renamed to avoid confusion
+            steps {
+                echo 'Setting up PostgreSQL...'
+                withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
+                    sh '''
+                    brew services start postgresql@15
+                    psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;" || echo "User already exists"
+                    psql -U postgres -c "CREATE DATABASE Test;" || echo "Database already exists"
+                    '''
+                }
+            }
+        } // Added this closing brace
 
         stage('Reinstall psycopg2') {
             steps {
