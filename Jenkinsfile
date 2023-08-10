@@ -27,34 +27,29 @@ pipeline {
             }
         }
 
-        stage('Setup PostgreSQL 1') { // Renamed to avoid confusion
+        stage('Setup PostgreSQL') {
             steps {
                 echo 'Setting up PostgreSQL...'
-                withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
-                    sh '''
-                    which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-                    brew update
-                    brew install postgresql@15
-                    brew services start postgresql@15
-                    /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists Test
-                    /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb Test
-                    '''
+                script {
+                    // Check if PostgreSQL is already installed
+                    def isPostgresInstalled = sh(script: 'which psql', returnStatus: true) == 0
+                    if (isPostgresInstalled) {
+                        echo 'PostgreSQL is already installed. Skipping installation.'
+                    } else {
+                        withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
+                            sh '''
+                            which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+                            brew update
+                            brew install postgresql@15
+                            brew services start postgresql@15
+                            /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists Test
+                            /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb Test
+                            '''
+                        }
+                    }
                 }
             }
         }
-
-        stage('Setup PostgreSQL 2') { // Renamed to avoid confusion
-            steps {
-                echo 'Setting up PostgreSQL...'
-                withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
-                    sh '''
-                    brew services start postgresql@15
-                    psql -U postgres -c "CREATE USER username WITH PASSWORD 'admin' SUPERUSER;" || echo "User already exists"
-                    psql -U postgres -c "CREATE DATABASE Test;" || echo "Database already exists"
-                    '''
-                }
-            }
-        } // Added this closing brace
 
         stage('Reinstall psycopg2') {
             steps {
