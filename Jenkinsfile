@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -20,6 +21,7 @@ pipeline {
                 sh '''
                 python3 -m venv venv
                 . venv/bin/activate
+                pip install --upgrade pip // Upgrade pip
                 pip install -r requirements.txt
                 pip install flask-login
                 pip install flask-bootstrap
@@ -34,14 +36,15 @@ pipeline {
                     // Check if PostgreSQL is already installed
                     def isPostgresInstalled = sh(script: 'which psql', returnStatus: true) == 0
                     if (isPostgresInstalled) {
-                        echo 'PostgreSQL is already installed. Skipping installation.'
+                        echo 'PostgreSQL is already installed. Upgrading if necessary.'
+                        sh 'brew upgrade postgresql@15' // Upgrade PostgreSQL
                     } else {
                         withCredentials([string(credentialsId: 'jenkins', variable: 'password')]) {
                             sh '''
                             which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
                             brew update
                             brew install postgresql@15
-                            brew services start postgresql@15
+                            sudo brew services start postgresql@15 // Use sudo to start the service
                             /usr/local/Cellar/postgresql@15/15.3_2/bin/dropdb --if-exists Test
                             /usr/local/Cellar/postgresql@15/15.3_2/bin/createdb Test
                             '''
