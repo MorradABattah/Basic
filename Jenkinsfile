@@ -16,18 +16,19 @@ pipeline {
         }
 
         stage('Setup Environment') {
-            steps {
-                echo 'Setting up virtual environment and installing requirements...'
-                sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip // Upgrade pip
-                pip install -r requirements.txt
-                pip install flask-login
-                pip install flask-bootstrap
-                '''
-            }
-        }
+    steps {
+        echo 'Setting up virtual environment and installing requirements...'
+        sh '''
+        python3 -m venv venv
+        . venv/bin/activate
+        pip install --upgrade pip # Upgrade pip
+        pip install -r requirements.txt
+        pip install flask-login
+        pip install flask-bootstrap
+        '''
+    }
+}
+
 
         stage('Setup PostgreSQL') {
             steps {
